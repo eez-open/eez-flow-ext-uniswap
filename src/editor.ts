@@ -479,13 +479,13 @@ export default {
                 };
             }
 
-            token0Price: string;
-            token1Price: string;
-            inputAmount: string;
-            outputAmount: string;
-            fee: string;
-            priceImpact: string;
-            expectedPrice: string;
+            token0Price: number;
+            token1Price: number;
+            inputAmount: number;
+            outputAmount: number;
+            fee: number;
+            priceImpact: number;
+            expectedPrice: number;
 
             async getPrice() {
                 const uniswapPoolAddress = uniswapPoolAddresses.get(
@@ -653,13 +653,23 @@ export default {
                     throw "Failed to create unchecked trade";
                 }
 
-                this.token0Price = poolInstance.token0Price.toSignificant();
-                this.token1Price = poolInstance.token1Price.toSignificant();
-                this.fee = poolInstance.fee.toString();
+                this.token0Price = Number.parseFloat(
+                    poolInstance.token0Price.toSignificant()
+                );
+                this.token1Price = Number.parseFloat(
+                    poolInstance.token1Price.toSignificant()
+                );
+                this.fee = Number.parseFloat(poolInstance.fee.toString());
 
-                this.inputAmount = uncheckedTrade.inputAmount.toSignificant();
-                this.outputAmount = uncheckedTrade.outputAmount.toSignificant();
-                this.priceImpact = uncheckedTrade.priceImpact.toSignificant();
+                this.inputAmount = Number.parseFloat(
+                    uncheckedTrade.inputAmount.toSignificant()
+                );
+                this.outputAmount = Number.parseFloat(
+                    uncheckedTrade.outputAmount.toSignificant()
+                );
+                this.priceImpact = Number.parseFloat(
+                    uncheckedTrade.priceImpact.toSignificant()
+                );
 
                 const worstExecutionPrice =
                     await uncheckedTrade.worstExecutionPrice(
@@ -672,7 +682,9 @@ export default {
                         )
                     );
 
-                this.expectedPrice = worstExecutionPrice.toSignificant();
+                this.expectedPrice = Number.parseFloat(
+                    worstExecutionPrice.toSignificant()
+                );
             }
         }
 
@@ -695,37 +707,37 @@ export default {
             valueFieldDescriptions: [
                 {
                     name: "token0Price",
-                    valueType: "string",
+                    valueType: "double",
                     getFieldValue: (value: UniswapPrice) => value.token0Price
                 },
                 {
                     name: "token1Price",
-                    valueType: "string",
+                    valueType: "double",
                     getFieldValue: (value: UniswapPrice) => value.token1Price
                 },
                 {
                     name: "inputAmount",
-                    valueType: "string",
+                    valueType: "double",
                     getFieldValue: (value: UniswapPrice) => value.inputAmount
                 },
                 {
                     name: "outputAmount",
-                    valueType: "string",
+                    valueType: "double",
                     getFieldValue: (value: UniswapPrice) => value.outputAmount
                 },
                 {
                     name: "fee",
-                    valueType: "string",
+                    valueType: "double",
                     getFieldValue: (value: UniswapPrice) => value.fee
                 },
                 {
                     name: "priceImpact",
-                    valueType: "string",
+                    valueType: "double",
                     getFieldValue: (value: UniswapPrice) => value.priceImpact
                 },
                 {
                     name: "expectedPrice",
-                    valueType: "string",
+                    valueType: "double",
                     getFieldValue: (value: UniswapPrice) => value.expectedPrice
                 }
             ]
