@@ -1,0 +1,43 @@
+{
+    "name": "eez-flow-ext-uniswap",
+    "displayName": "EEZ-Flow uniswap extension",
+    "version": "0.1.22",
+    "author": "Envox",
+    "repository": "https://github.com/eez-open/eez-flow-ext-uniswap",
+    "license": "GPL-3.0-only",
+    "main": "dist/editor.js",
+    "scripts": {
+        "build": "cd src && tsc",
+        "watch": "cd src && tsc -w",
+        "publish": "npm publish ."
+    },
+    "keywords": [
+        "eez-studio",
+        "eez-flow",
+        "uniswap"
+    ],
+    "dependencies": {
+        "@uniswap/sdk-core": "^3.0.1",
+        "@uniswap/v3-core": "^1.0.1",
+        "@uniswap/v3-sdk": "^3.8.2",
+        "elliptic": "^6.5.4",
+        "ethers": "^5.6.4"
+    },
+    "devDependencies": {
+        "@types/node": "^17.0.30",
+        "@types/react": "^18.0.6",
+        "eez-studio-types": "^0.0.53"
+    },
+    "eez-studio": {
+        "node-module": true,
+        "runtime": "dist/runtime.js"
+    },
+    "image": "image.png",
+    "description": "",
+    "prettier": {
+        "printWidth": 80,
+        "tabWidth": 4,
+        "trailingComma": "none",
+        "arrowParens": "avoid"
+    }
+}
