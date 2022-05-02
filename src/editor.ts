@@ -1,4 +1,4 @@
-import { ethers } from "ethers";
+import { ethers, utils } from "ethers";
 import { CurrencyAmount, Percent, Token, TradeType } from "@uniswap/sdk-core";
 import { Pool, Route, Trade } from "@uniswap/v3-sdk";
 import { abi as UniswapV3Factory } from "@uniswap/v3-core/artifacts/contracts/UniswapV3Factory.sol/UniswapV3Factory.json";
@@ -490,9 +490,12 @@ export default {
             token1Price: number;
             inputAmount: number;
             outputAmount: number;
-            fee: number;
+            gasPrice: number;
+            maxFeePerGas: number;
+            maxPriorityFeePerGas: number;
             priceImpact: number;
-            expectedPrice: number;
+            executionPrice: number;
+            worstExecutionPrice: number;
 
             async getPrice() {
                 const uniswapPoolAddress = uniswapPoolAddresses.get(
@@ -511,6 +514,7 @@ export default {
                     throw "Invalid pool contract";
                 }
 
+                const provider = uniswapPoolAddress.provider;
                 const poolContract = uniswapPoolAddress.poolContract;
 
                 interface Immutables {
@@ -666,7 +670,35 @@ export default {
                 this.token1Price = Number.parseFloat(
                     poolInstance.token1Price.toSignificant()
                 );
-                this.fee = Number.parseFloat(poolInstance.fee.toString());
+
+                const feeData = await provider.getFeeData();
+                const gasPrice = feeData.gasPrice?.toString();
+                if (gasPrice) {
+                    this.gasPrice = Number.parseFloat(
+                        utils.formatUnits(gasPrice, "gwei")
+                    );
+                } else {
+                    this.gasPrice = NaN;
+                }
+
+                const maxFeePerGas = feeData.maxFeePerGas?.toString();
+                if (maxFeePerGas) {
+                    this.maxFeePerGas = Number.parseFloat(
+                        utils.formatUnits(maxFeePerGas, "gwei")
+                    );
+                } else {
+                    this.maxFeePerGas = NaN;
+                }
+
+                const maxPriorityFeePerGas =
+                    feeData.maxPriorityFeePerGas?.toString();
+                if (maxPriorityFeePerGas) {
+                    this.maxPriorityFeePerGas = Number.parseFloat(
+                        utils.formatUnits(maxPriorityFeePerGas, "gwei")
+                    );
+                } else {
+                    this.maxPriorityFeePerGas = NaN;
+                }
 
                 this.inputAmount = Number.parseFloat(
                     uncheckedTrade.inputAmount.toSignificant()
@@ -676,6 +708,9 @@ export default {
                 );
                 this.priceImpact = Number.parseFloat(
                     uncheckedTrade.priceImpact.toSignificant()
+                );
+                this.executionPrice = Number.parseFloat(
+                    uncheckedTrade.executionPrice.toSignificant()
                 );
 
                 const worstExecutionPrice =
@@ -688,8 +723,7 @@ export default {
                             1000000000
                         )
                     );
-
-                this.expectedPrice = Number.parseFloat(
+                this.worstExecutionPrice = Number.parseFloat(
                     worstExecutionPrice.toSignificant()
                 );
             }
@@ -733,9 +767,20 @@ export default {
                     getFieldValue: (value: UniswapPrice) => value.outputAmount
                 },
                 {
-                    name: "fee",
+                    name: "gasPrice",
                     valueType: "double",
-                    getFieldValue: (value: UniswapPrice) => value.fee
+                    getFieldValue: (value: UniswapPrice) => value.gasPrice
+                },
+                {
+                    name: "maxFeePerGas",
+                    valueType: "double",
+                    getFieldValue: (value: UniswapPrice) => value.maxFeePerGas
+                },
+                {
+                    name: "maxPriorityFeePerGas",
+                    valueType: "double",
+                    getFieldValue: (value: UniswapPrice) =>
+                        value.maxPriorityFeePerGas
                 },
                 {
                     name: "priceImpact",
@@ -743,9 +788,15 @@ export default {
                     getFieldValue: (value: UniswapPrice) => value.priceImpact
                 },
                 {
-                    name: "expectedPrice",
+                    name: "executionPrice",
                     valueType: "double",
-                    getFieldValue: (value: UniswapPrice) => value.expectedPrice
+                    getFieldValue: (value: UniswapPrice) => value.executionPrice
+                },
+                {
+                    name: "worstExecutionPrice",
+                    valueType: "double",
+                    getFieldValue: (value: UniswapPrice) =>
+                        value.worstExecutionPrice
                 }
             ]
         });

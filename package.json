@@ -1,7 +1,7 @@
 {
     "name": "eez-flow-ext-uniswap",
     "displayName": "EEZ-Flow uniswap extension",
-    "version": "0.1.24",
+    "version": "0.1.25",
     "author": "Envox",
     "repository": "https://github.com/eez-open/eez-flow-ext-uniswap",
     "license": "GPL-3.0-only",
