@@ -361,18 +361,18 @@ export default {
                     throw "Failed to create factory contract";
                 }
 
-                const poolAddress = await factoryContract.getPool(
+                this.poolAddress = await factoryContract.getPool(
                     this.constructorParams.token0,
                     this.constructorParams.token1,
                     this.constructorParams.fee
                 );
 
-                if (!poolAddress) {
+                if (!this.poolAddress) {
                     throw "Failed to obtain pool address";
                 }
 
                 this.poolContract = new ethers.Contract(
-                    poolAddress,
+                    this.poolAddress,
                     IUniswapV3PoolABI,
                     this.provider
                 );
@@ -383,6 +383,7 @@ export default {
             }
 
             provider: ethers.providers.JsonRpcProvider;
+            poolAddress: string;
             poolContract: ethers.Contract;
 
             id: number;
@@ -456,6 +457,12 @@ export default {
                     valueType: "integer",
                     getFieldValue: (value: UniswapPoolAddress) =>
                         value.constructorParams.fee
+                },
+                {
+                    name: "poolAddress",
+                    valueType: "string",
+                    getFieldValue: (value: UniswapPoolAddress) =>
+                        value.poolAddress
                 }
             ]
         });
